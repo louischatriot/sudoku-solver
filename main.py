@@ -70,14 +70,19 @@ def propagate(pos, i0, j0):
 
 
 # square between 0 and N ** 4 - 1
-def search(pos, square, sols):
-    if square == N ** 4 - 1:
+def search(pos, idx, sols, order):
+    
+
+
+    if idx == N ** 4 - 1:
         sols.append(pos)
         return None
         # return pos   # If propagation was correct this is the solution
 
-    if square >= N ** 4:
+    if idx >= N ** 4:
         return None
+
+    square = order[idx]
 
     i = square // N ** 2
     j = square - i * N ** 2
@@ -86,7 +91,7 @@ def search(pos, square, sols):
         return None   # Should not happen if propagation done well, except if input is buggy
 
     if len(pos[i][j]) == 1:
-        search(pos, square + 1, sols)
+        search(pos, idx + 1, sols, order)
         return None
 
     for c in pos[i][j]:
@@ -97,7 +102,7 @@ def search(pos, square, sols):
             continue
             # return None
 
-        res = search(_pos, square + 1, sols)
+        res = search(_pos, idx + 1, sols, order)
         # if res is not None:
         #    return res
 
@@ -175,8 +180,15 @@ def sudoku_solver(puzzle):
 
     pos = create_possibilities(puzzle)
 
+    order = []
+    for n in range(1, N ** 2 + 1):
+        for i in range(0, N ** 2):
+            for j in range(0, N ** 2):
+                if len(pos[i][j]) == n:
+                    order.append(N ** 2 * i + j)
+
     sols = []
-    search(pos, 0, sols)
+    search(pos, 0, sols, order)
 
     if len(sols) == 1:
         res = sols[0]
