@@ -1,3 +1,5 @@
+N = 3
+
 
 
 def clone_grid(g):
@@ -7,17 +9,62 @@ def clone_grid(g):
     return new
 
 
-def print_grid(g)
+def print_grid(g):
     print("=================")
     for l in g:
-        print(" ".join(l))
+        print(" ".join(map(str, l)))
     print("=================")
+    print("")
 
 
+def create_possibilities(g):
+    pos = []
+    for l in g:
+        pos.append(['123456789' for n in l])
+
+    print_grid(pos)
+
+    for i in range(0, N * N):
+        for j in range(0, N * N):
+            if g[i][j] != 0:
+                pos[i][j] = str(g[i][j])
+                propagate(pos, i, j)
+
+    return pos
 
 
+def propagate(pos, i0, j0):
+    # print(f"PROPAGATING {i0} {j0}")
 
 
+    if len(pos[i0][j0]) > 1:
+        return   # Nothing to propagate, not a single result yet
+
+    c = str(pos[i0][j0])
+
+    # Column
+    for i in range(0, N * N):
+        if i != i0 and c in pos[i][j0]:
+            pos[i][j0] = pos[i][j0].replace(c, '')
+            propagate(pos, i, j0)
+
+    # Row
+    for j in range(0, N * N):
+        if j != j0 and c in pos[i0][j]:
+            pos[i0][j] = pos[i0][j].replace(c, '')
+            propagate(pos, i0, j)
+
+    # Square
+    si = i0 // N
+    sj = j0 // N
+
+    for di in range(0, N):
+        for dj in range(0, N):
+            i = 3 * si + di
+            j = 3 * sj + dj
+            if i != i0 and j != j0 and c in pos[i][j]:
+                pos[i][j] = pos[i][j].replace(c, '')
+                propagate(pos, i, j)
 
 
 
@@ -46,3 +93,20 @@ solution = [
     [6, 2, 4, 7, 5, 9, 3, 8, 1],
     [1, 7, 3, 8, 6, 2, 5, 9, 4]
 ]
+
+print_grid(puzzle)
+pos = create_possibilities(puzzle)
+
+print_grid(pos)
+
+"""
+pos[3][5] = '6'
+propagate(pos, 3, 5)
+
+print_grid(pos)
+"""
+
+
+
+
+
